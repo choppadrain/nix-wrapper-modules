@@ -486,7 +486,6 @@ in
     before = [ "constructFiles" ]; # <- by default constructFiles is the first of the 3 in modules.default
     data =
       let
-        initLuaFile = config.lib.pkgs.writeText "init.lua" ''${config.settings.initLua}''; # <- s
 
         toLink =
           dir: n: v:
@@ -497,15 +496,23 @@ in
         mkdir -p ${lib.escapeShellArg "${config.generatedConfig.placeholder}/plugins"}
         mkdir -p ${lib.escapeShellArg "${config.generatedConfig.placeholder}/flavors"}
 
-        ln -s ${initLuaFile} ${lib.escapeShellArg "${config.generatedConfig.placeholder}/init.lua"}
       ''
       + lib.concatMapAttrsStringSep "\n" (toLink "plugins") config.plugins
       + lib.concatMapAttrsStringSep "\n" (toLink "flavors") config.flavors;
   };
     
-  config.initLua = pkgs.writeText "init.lua" ''
-    ${config.initLua}
-  '';
+  config.buildCommand.makeInitLua = 
+    let
+        writeLua = pkgs.writeText "init.lua" ''${config.initLua}'';
+    in
+  {
+    before = [ "constructFiles" ];
+    data = ''
+        ln -s ${writeLua} ${lib.escapeShellarg "${config.generated.placeholder}/init.lua"}
+    '';
+  };
+    
+  
 
   config.package = lib.mkDefault pkgs.yazi;
   config.env.YAZI_CONFIG_HOME = config.generatedConfig.placeholder;
