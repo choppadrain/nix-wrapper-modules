@@ -486,7 +486,7 @@ in
     before = [ "constructFiles" ]; # <- by default constructFiles is the first of the 3 in modules.default
     data =
       let
-        initLuaFile = pkgs.writeText "init.lua" ''${config.settings.initLua}''; # <- s
+        initLuaFile = config.lib.pkgs.writeText "init.lua" ''${config.settings.initLua}''; # <- s
 
         toLink =
           dir: n: v:
