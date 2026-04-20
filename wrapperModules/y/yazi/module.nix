@@ -486,7 +486,7 @@ in
     before = [ "constructFiles" ]; # <- by default constructFiles is the first of the 3 in modules.default
     data =
       let
-        initLuaFile = pkgs.writeText "init.lua" config.settings.initLua;
+        initLuaFile = pkgs.writeText "init.lua" ''${config.settings.initLua}''; # <- s
 
         toLink =
           dir: n: v:
@@ -534,5 +534,5 @@ in
         vfs = config.settings.vfs;
         package = config.settings.package;
       };
-  config.meta.maintainers = [ wlib.maintainers.apetrovic6 ];
+  config.meta.maintainers = [ wlib.maintainers.apetrovic6 wlib.maintainers.choppadrain];
 }
