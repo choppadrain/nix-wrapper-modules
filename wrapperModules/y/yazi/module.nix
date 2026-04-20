@@ -201,6 +201,15 @@ in
       };
     };
 
+    initLua = lib.mkOption {
+        type = lib.types.lines;
+        description = ''
+            Content of init.lua file
+           See < https://yazi-rs.github.io/docs/plugins/overview/>
+        '';
+        default = '''';
+    };
+
     theme = lib.mkOption {
       default = { };
       description = ''
@@ -477,6 +486,8 @@ in
     before = [ "constructFiles" ]; # <- by default constructFiles is the first of the 3 in modules.default
     data =
       let
+        initLuaFile = pkgs.writeText "init.lua" config.settings.initLua;
+
         toLink =
           dir: n: v:
           lib.optionalString (v != null)
@@ -485,10 +496,16 @@ in
       ''
         mkdir -p ${lib.escapeShellArg "${config.generatedConfig.placeholder}/plugins"}
         mkdir -p ${lib.escapeShellArg "${config.generatedConfig.placeholder}/flavors"}
+
+        ln -s ${initLuaFile} ${lib.escapeShellArg "${config.generatedConfig.placeholder}/init.lua"}
       ''
       + lib.concatMapAttrsStringSep "\n" (toLink "plugins") config.plugins
       + lib.concatMapAttrsStringSep "\n" (toLink "flavors") config.flavors;
   };
+    
+  config.initLua = pkgs.writeText "init.lua" ''
+    ${config.initLua}
+  '';
 
   config.package = lib.mkDefault pkgs.yazi;
   config.env.YAZI_CONFIG_HOME = config.generatedConfig.placeholder;
