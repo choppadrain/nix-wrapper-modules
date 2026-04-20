@@ -202,12 +202,12 @@ in
     };
 
     initLua = lib.mkOption {
-        type = lib.types.lines;
-        description = ''
-            Content of init.lua file
-           See < https://yazi-rs.github.io/docs/plugins/overview/>
-        '';
-        default = '''';
+      type = lib.types.lines;
+      description = ''
+         Content of init.lua file
+        See < https://yazi-rs.github.io/docs/plugins/overview/>
+      '';
+      default = "";
     };
 
     theme = lib.mkOption {
@@ -500,19 +500,6 @@ in
       + lib.concatMapAttrsStringSep "\n" (toLink "plugins") config.plugins
       + lib.concatMapAttrsStringSep "\n" (toLink "flavors") config.flavors;
   };
-    
-  config.buildCommand.makeInitLua = 
-    let
-        writeLua = pkgs.writeText "init.lua" ''${config.initLua}'';
-    in
-  {
-    before = [ "constructFiles" ];
-    data = ''
-        ln -s ${writeLua} ${lib.escapeShellarg "${config.generated.placeholder}/init.lua"}
-    '';
-  };
-    
-  
 
   config.package = lib.mkDefault pkgs.yazi;
   config.env.YAZI_CONFIG_HOME = config.generatedConfig.placeholder;
@@ -522,7 +509,7 @@ in
   }/${config.binName}-config";
   # using constructFiles instead of (pkgs.formats.toml {}).generate allows placeholders to refer to the final wrapper derivation in the options.
   config.constructFiles =
-    builtins.mapAttrs
+    (builtins.mapAttrs
       (n: v: {
         # generate the directory of toml files
         # use lib.mkOverride 0 to force the value to make sure they stay together
@@ -540,6 +527,17 @@ in
         theme = config.settings.theme;
         vfs = config.settings.vfs;
         package = config.settings.package;
+      }
+    )
+    // {
+      initLua = {
+
+        content = config.initLua;
+        relPath = "init.lua";
       };
-  config.meta.maintainers = [ wlib.maintainers.apetrovic6 wlib.maintainers.choppadrain];
+    };
+  config.meta.maintainers = [
+    wlib.maintainers.apetrovic6
+    wlib.maintainers.choppadrain
+  ];
 }
