@@ -32,6 +32,8 @@ in
             default = { };
           };
 
+       
+
           preview = lib.mkOption {
             type = tomlFmt.type;
             description = ''
@@ -104,9 +106,18 @@ in
             default = { };
           };
 
+            
         };
       };
     };
+    initLua= lib.mkOption {
+        type = lib.types.lines;
+        description = ''
+            Content of init.lua file
+            See < https://yazi-rs.github.io/docs/plugins/overview/>
+            '';
+        default = '''';
+        };
 
     keymap = lib.mkOption {
       default = { };
@@ -201,15 +212,7 @@ in
       };
     };
 
-    initLua = lib.mkOption {
-      type = lib.types.lines;
-      description = ''
-         Content of init.lua file
-        See < https://yazi-rs.github.io/docs/plugins/overview/>
-      '';
-      default = "";
-    };
-
+    
     theme = lib.mkOption {
       default = { };
       description = ''
@@ -530,14 +533,14 @@ in
       }
     )
     // {
-      initLua = {
+       LuaRoflan = {
+        content = config.settings.initLua;
+        relPath = "${config.generatedConfig}/init.lua";
 
-        content = config.initLua;
-        relPath = "init.lua";
       };
-    };
+     };
+
   config.meta.maintainers = [
     wlib.maintainers.apetrovic6
-    wlib.maintainers.choppadrain
   ];
 }
