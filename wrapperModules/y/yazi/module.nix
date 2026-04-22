@@ -110,15 +110,6 @@ in
         };
       };
     };
-    initLua= lib.mkOption {
-        type = lib.types.lines;
-        description = ''
-            Content of init.lua file
-            See < https://yazi-rs.github.io/docs/plugins/overview/>
-            '';
-        default = '''';
-        };
-
     keymap = lib.mkOption {
       default = { };
       description = ''
@@ -478,6 +469,16 @@ in
       ```
     '';
   };
+    options.initLua= lib.mkOption {
+        type = lib.types.lines;
+        description = ''
+            Content of init.lua file
+            See < https://yazi-rs.github.io/docs/plugins/overview/>
+            '';
+        default = '''';
+        };
+
+
   options.flavors = lib.mkOption {
     type = lib.types.attrsOf (lib.types.nullOr wlib.types.stringable);
     default = { };
@@ -534,8 +535,8 @@ in
     )
     // {
        LuaRoflan = {
-        content = config.settings.initLua;
-        relPath = "${config.generatedConfig}/init.lua";
+        content = config.initLua;
+        relPath = "yazi-config/init.lua";
 
       };
      };
